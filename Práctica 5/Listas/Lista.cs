@@ -88,6 +88,20 @@ namespace Listas
 			e = pri.dato;
 		}
 
+		public int[] ToArray()
+        {
+			int[] arr = new int[nElems];
+			Nodo aux = pri;
+
+			for(int i = 0; i < nElems; i++)
+            {
+				arr[i] = aux.dato;
+				aux = aux.sig;
+            }
+
+			return arr;
+        }
+
 
 		/// <summary>
 		/// Obtiene el ultimo elemento de la lista
