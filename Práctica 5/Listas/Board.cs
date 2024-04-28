@@ -23,6 +23,7 @@ namespace Game
         /// - g: Goal
         /// </summary>
         char[,] map;
+        public char[,] Map => map;
 
         /// <summary>
         /// Number of rows and cols of the map
@@ -48,6 +49,9 @@ namespace Game
         /// <param name="maxItems">Max number of items contained in the board.</param>
         public Board(int r, int c, string textMap, int maxItems)
         {
+            ROWS = r;
+            COLS = c;
+
             map = new char[r, c];
 
             string[] rows = textMap.Split(' ');
@@ -61,7 +65,19 @@ namespace Game
                 }
             }
 
-            Item[] items = new Item[maxItems];
+            itemsInBoard = new Item[maxItems];
+
+            for(int a = 0; a < map.GetLength(0); a++)
+            {
+                for(int b = 0; b < map.GetLength(1); b++)
+                {
+                    if(map[a,b] == 'i')
+                    {
+                        int value = new Random().Next(1, 5);
+                        AddItem(a,b, value);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -127,6 +143,7 @@ namespace Game
             while(i < itemsInBoard.Length && !encontrado)
             {
                 encontrado = itemsInBoard[i].row == r && itemsInBoard[i].col == c;
+                map[r, c] = '0';
                 i++;
             }
 

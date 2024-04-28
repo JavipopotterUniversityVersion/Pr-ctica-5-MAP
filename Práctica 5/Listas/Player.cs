@@ -25,6 +25,7 @@ namespace Game
         public Player()
         {
             row = col = 0;
+            numCollectedItems = 0;
             bag = new Lista();
         }
 
@@ -68,7 +69,11 @@ namespace Game
         {
             bool containsItem = aBoard.ContainsItem(row, col);
 
-            if (containsItem) bag.InsertaFin(aBoard.PickItem(row, col));
+            if (containsItem)
+            {
+                bag.InsertaFin(aBoard.PickItem(row, col));
+                numCollectedItems++;
+            }
 
             return containsItem;
         }
@@ -83,7 +88,7 @@ namespace Game
             int[] itemsIndex = bag.ToArray();
             int totalValue = 0;
 
-            for(int i = 0; i < itemsIndex.Length; i++)
+            for(int i = 0; i < numCollectedItems; i++)
             {
                 totalValue += aBoard.GetItem(itemsIndex[i]).value;
             }
