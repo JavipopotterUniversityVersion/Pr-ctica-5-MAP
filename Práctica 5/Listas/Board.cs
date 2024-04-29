@@ -87,7 +87,7 @@ namespace Game
         /// <returns>True if there  is a wall in position (r,c); false, otherwise</returns>
         /// <param name="r">row</param>
         /// <param name="c">column</param>
-        public bool IsWallAt(int r, int c) => !(r > ROWS || c > COLS || map[r,c] == 'w');
+        public bool IsWallAt(int r, int c) => !(r > ROWS || c > COLS || r < 0 || c < 0 || map[r,c] == 'w');
 
         /// <summary>
         /// Checks if there is an item in a position. If the position is out of bounds it returns false
