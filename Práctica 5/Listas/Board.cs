@@ -54,7 +54,19 @@ namespace Game
 
             map = new char[r, c];
 
-            string[] rows = textMap.Split(' ');
+            int puntero = 0;
+
+            for(int i = 0; i < r; i++)
+            {
+                for(int j = 0; j < c; j++)
+                {
+                    map[i, j] = textMap[puntero];
+                    puntero++;
+                }
+            }
+            itemsInBoard = new Item[maxItems];
+
+            /*string[] rows = textMap.Split(' ');
 
             for(int i = 0; i < r; i++)
             {
@@ -77,7 +89,7 @@ namespace Game
                         AddItem(a,b, value);
                     }
                 }
-            }
+            }*/
         }
 
         /// <summary>
@@ -87,7 +99,14 @@ namespace Game
         /// <returns>True if there  is a wall in position (r,c); false, otherwise</returns>
         /// <param name="r">row</param>
         /// <param name="c">column</param>
-        public bool IsWallAt(int r, int c) => !(r > ROWS || c > COLS || r < 0 || c < 0 || map[r,c] == 'w');
+        public bool IsWallAt(int row, int col)
+        {
+            if (row >= 0 && row < map.GetLength(0) && col >= 0 && col < map.GetLength(1))
+            {
+                return map[row, col] == 'w';
+            }
+            return false;
+        }
 
         /// <summary>
         /// Checks if there is an item in a position. If the position is out of bounds it returns false
@@ -95,7 +114,14 @@ namespace Game
         /// <returns><c>true</c> if there  is an item in position (r,c); <c>false</c> otherwise</returns>
         /// <param name="r">row</param>
         /// <param name="c">column</param>
-        public bool ContainsItem(int r, int c) => !(r > ROWS || c > COLS || map[r, c] != 'i');
+        public bool ContainsItem(int row, int col)
+        {
+            if (row >= 0 && row < map.GetLength(0) && col >= 0 && col < map.GetLength(1))
+            {
+                return map[row, col] == 'i';
+            }
+            return false;
+        }
 
         /// <summary>
         /// Adds an item with a value in a position The position must be inside board bounds and it must be empty.
@@ -108,22 +134,27 @@ namespace Game
         /// <param name="value">Item value</param>
         public bool AddItem(int r, int c, int value)
         {
-            if(r > ROWS || c > COLS || map[r,c] != '0') return false;
-
-            if(numItemsInBoard < itemsInBoard.Length)
+            bool dentro = false;
+            int index = 0;
+            while (index < itemsInBoard.Length && !dentro)
             {
+                if (itemsInBoard[index].col == c && itemsInBoard[index].row == r && itemsInBoard[index].value == value)
+                {
+                    dentro = true;
+                }
+                index++;
+            }
+            if (!dentro && numItemsInBoard < itemsInBoard.Length && ContainsItem(r, c))
+            {
+
                 itemsInBoard[numItemsInBoard].row = r;
                 itemsInBoard[numItemsInBoard].col = c;
                 itemsInBoard[numItemsInBoard].value = value;
                 numItemsInBoard++;
+                return true;
             }
-            else
-            {
-                throw new Exception("Se ha superado la cantidad máxima de objetos posibles en el tablero de juego");
-            }
-
-            return numItemsInBoard < itemsInBoard.Length;
-
+            else if (!ContainsItem(r, c) || dentro) { return false; }
+            else throw new Exception("EL array esta lleno");
         }
 
 
@@ -136,18 +167,25 @@ namespace Game
         /// </returns>
         /// <param name="r">Row</param>
         /// <param name="c">Column</param>
-        public int PickItem(int r, int c)
+        public int PickItem(int row, int col)
         {
-            int i = 0;
-            bool encontrado = false;
-            while(i < itemsInBoard.Length && !encontrado)
+            int resultado = -1;
+            if (ContainsItem(row, col))
             {
-                encontrado = itemsInBoard[i].row == r && itemsInBoard[i].col == c;
-                map[r, c] = '0';
-                i++;
+                int i = 0;
+                while (i < itemsInBoard.Length)
+                {
+                    if (itemsInBoard[i].row == row && itemsInBoard[i].col == col)
+                    {
+                        resultado = itemsInBoard[i].value;
+                    }
+                    i++;
+                }
+                return resultado;
             }
+                return resultado;
+            
 
-            return i - 1;
         }
 
 
@@ -157,7 +195,14 @@ namespace Game
         /// <returns><c>true</c> if the position is a goal, <c>false</c> otherwise</returns>
         /// <param name="row">Row</param>
         /// <param name="col">Column</param>
-        public bool IsGoalAt(int row, int col) => map[row, col] == 'g';
+        public bool IsGoalAt(int row, int col)
+        {
+           if(row>= 0 && row< map.GetLength(0)&& col >= 0 && col < map.GetLength(1))
+            {
+                return map[row, col] == 'g';
+            }
+           return false;   
+        } 
 
         /// <summary>
         /// Gets the i-th item in the itemsInBoard array. It throws an exception if the item does not exist.
@@ -166,14 +211,16 @@ namespace Game
         /// <param name="i">The index in the itemsInBoard array</param>
         public Item GetItem(int i)
         {
-            if(i != -1)
+            if (i < numItemsInBoard)
             {
                 return itemsInBoard[i];
             }
             else
             {
-                throw new Exception("En esa posición no hay un item, espabila chaval");
+                throw new Exception("En esa posición no hay un item");
             }
+                
+            
         }
 
     }

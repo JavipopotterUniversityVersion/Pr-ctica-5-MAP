@@ -1,4 +1,5 @@
 ﻿using System;
+using Game;
 using Listas;
 namespace Game
 {
@@ -38,25 +39,65 @@ namespace Game
         /// <returns><c>true</c>, if the player can move, <c>false</c> otherwise.</returns>
         /// <param name="aBoard">The board where the player is moving</param>
         /// <param name="dir">Movement direction</param>
-        public bool CanMoveInDirection(Board aBoard, Direction dir) => aBoard.IsWallAt(row + directions[(int)dir, 0], col + directions[(int)dir, 1]);
+        public bool CanMoveInDirection(Board aBoard, Direction dir)
+        {
+            int newRow = row; 
+            int newCol = col; 
+            
 
-        /// <summary>
-        /// Moves the player along a direction until it collides with a wall. 
-        /// Player position is updated when the movement finishes.
-        /// Returns whether the player has moved at least one position.
-        /// </summary>
-        /// <returns><c>true</c>, if the player has moved at least one position, <c>false</c> otherwise.</returns>
-        /// <param name="aBoard">The board where the player is moving</param>
-        /// <param name="dir">Movement direction</param>
+            if (dir == Direction.West) //LFT
+            {
+                newRow--;
+            }
+            else if (dir == Direction.East) //RG
+            {
+                newRow++;
+            }
+            else if (dir == Direction.North) //UP
+            {
+                newCol++;
+            }
+            else if (dir == Direction.South) //DOWN
+            {
+                newCol--;
+            }
+        
+            return aBoard.IsWallAt(newRow, newCol);
+        }
+            
+
+/// <summary>
+/// Moves the player along a direction until it collides with a wall. 
+/// Player position is updated when the movement finishes.
+/// Returns whether the player has moved at least one position.
+/// </summary>
+/// <returns><c>true</c>, if the player has moved at least one position, <c>false</c> otherwise.</returns>
+/// <param name="aBoard">The board where the player is moving</param>
+/// <param name="dir">Movement direction</param>
         public bool Move(Board aBoard, Direction dir)
         {
-            int steps = 0;
-            while(CanMoveInDirection(aBoard, dir)) steps++;
-
-            row += directions[(int)dir, 0] * steps;
-            col += directions[(int)dir, 1] * steps;
-
-            return steps > 0;
+            while (!CanMoveInDirection(aBoard, dir))
+            {
+                if (dir == Direction.East) //RG
+                {
+                    row++;
+                }
+                else if (dir == Direction.West) //LFT
+                {
+                    row--;
+                }
+                else if (dir == Direction.North) //UP
+                {
+                    col++;
+                }
+                else if (dir == Direction.South) //DOWN
+                {
+                    col--;
+                }
+                
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -85,15 +126,12 @@ namespace Game
         /// <param name="aBoard">The board where the player is moving.</param>
         public int InventoryValue(Board aBoard)
         {
-            int[] itemsIndex = bag.ToArray();
-            int totalValue = 0;
-
-            for(int i = 0; i < numCollectedItems; i++)
+            int suma = 0;
+            for (int i = 0; i < bag.nElems; i++)
             {
-                totalValue += aBoard.GetItem(itemsIndex[i]).value;
+                suma += bag.N_esimo(i);
             }
-
-            return totalValue;
+            return suma;
         }
 
         /// <summary>
